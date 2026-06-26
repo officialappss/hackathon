@@ -354,7 +354,12 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: "Internal server error." });
 });
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, "0.0.0.0", () => {
-  console.log(`QueueStorm Investigator running on port ${PORT}`);
-});
+// Keep-alive ping
+const SERVICE_URL = process.env.RENDER_EXTERNAL_URL;
+if (SERVICE_URL) {
+  setInterval(() => {
+    fetch(`${SERVICE_URL}/health`)
+      .then(() => console.log("Keep-alive ping sent"))
+      .catch(() => {});
+  }, 10 * 60 * 1000);
+}
